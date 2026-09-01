@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Visualizador y divisor territorial interactivo del distrito de La Victoria en 2 bloques estratégicos mediante avenidas principales.">
+  <title>División Territorial de La Victoria | Mapa Interactivo</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet CSS (Motor de renderizado de mapas con soporte para Google Maps Tiles) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app-root" class="app-layout">
+    
+    <!-- Sidebar de Control e Inteligencia Territorial -->
+    <aside class="sidebar" id="main-sidebar">
+      <header class="sidebar-header">
+        <div class="brand-badge">
+          <i class="fa-solid fa-map-location-dot brand-icon"></i>
+          <div>
+            <h1 class="brand-title">La Victoria</h1>
+            <span class="brand-subtitle">División Territorial de 2 Bloques</span>
+          </div>
+        </div>
+        <button id="btn-toggle-sidebar" class="btn-icon-collapse" title="Minimizar panel" aria-label="Colapsar panel lateral">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      </header>
+
+      <div class="sidebar-scrollable">
+        
+        <!-- Selector de Avenida Divisoria -->
+        <section class="panel-section">
+          <div class="section-label">
+            <i class="fa-solid fa-road"></i>
+            <span>EJE DIVISORIO (AVENIDA)</span>
+          </div>
+          <div class="avenue-selector-group">
+            <button class="btn-avenue active" data-division="mexico" id="btn-div-mexico">
+              <div class="avenue-info">
+                <strong>Av. México</strong>
+                <small>División Norte / Sur</small>
+              </div>
+              <span class="badge-tag">Norte / Sur</span>
+            </button>
+            <button class="btn-avenue" data-division="manco_capac" id="btn-div-manco-capac">
+              <div class="avenue-info">
+                <strong>Av. Manco Cápac / Iquitos</strong>
+                <small>División Oeste / Este</small>
+              </div>
+              <span class="badge-tag">Oeste / Este</span>
+            </button>
+            <button class="btn-avenue" data-division="arriola" id="btn-div-arriola">
+              <div class="avenue-info">
+                <strong>Av. 28 de Julio</strong>
+                <small>División Cívica / Damero</small>
+              </div>
+              <span class="badge-tag">Grau / Sur</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Bloques Comparativos y Estadísticas -->
+        <section class="panel-section">
+          <div class="section-label">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>BLOQUES DELIMITADOS</span>
+          </div>
+
+          <!-- Card Bloque A -->
+          <div class="block-card block-a" id="card-block-a" data-block="A">
+            <div class="block-header">
+              <div class="block-identifier">
+                <span class="dot-indicator dot-a"></span>
+                <h3 id="block-a-title">Bloque 1: Sector Norte</h3>
+              </div>
+              <button class="btn-focus-block" id="btn-focus-a" title="Enfocar Bloque A">
+                <i class="fa-solid fa-crosshairs"></i>
+              </button>
+            </div>
+            <p class="block-desc" id="block-a-desc">Eje Comercial y Núcleo Textil (Gamarra, Plaza Manco Cápac, 28 de Julio).</p>
+            <div class="block-metrics-grid">
+              <div class="metric-item">
+                <span class="metric-label">Área Aprox.</span>
+                <span class="metric-value" id="block-a-area">3.85 km²</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Población Est.</span>
+                <span class="metric-value" id="block-a-pop">~102,400</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Comercios</span>
+                <span class="metric-value highlight-a" id="block-a-biz">~28,500</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Puntos Clave</span>
+                <span class="metric-value" id="block-a-pois">12 Lugares</span>
+              </div>
+            </div>
+            <div class="block-tags" id="block-a-tags">
+              <span class="tag">Gamarra</span>
+              <span class="tag">Plaza Manco Cápac</span>
+              <span class="tag">Luna Pizarro</span>
+            </div>
+          </div>
+
+          <!-- Card Bloque B -->
+          <div class="block-card block-b" id="card-block-b" data-block="B">
+            <div class="block-header">
+              <div class="block-identifier">
+                <span class="dot-indicator dot-b"></span>
+                <h3 id="block-b-title">Bloque 2: Sector Sur</h3>
+              </div>
+              <button class="btn-focus-block" id="btn-focus-b" title="Enfocar Bloque B">
+                <i class="fa-solid fa-crosshairs"></i>
+              </button>
+            </div>
+            <p class="block-desc" id="block-b-desc">Eje Residencial, Deportivo e Industrial (Matute, Balconcillo, Apolo, Av. Canadá).</p>
+            <div class="block-metrics-grid">
+              <div class="metric-item">
+                <span class="metric-label">Área Aprox.</span>
+                <span class="metric-value" id="block-b-area">4.89 km²</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Población Est.</span>
+                <span class="metric-value" id="block-b-pop">~94,600</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Comercios</span>
+                <span class="metric-value highlight-b" id="block-b-biz">~11,200</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Puntos Clave</span>
+                <span class="metric-value" id="block-b-pois">9 Lugares</span>
+              </div>
+            </div>
+            <div class="block-tags" id="block-b-tags">
+              <span class="tag">Matute (Estadio)</span>
+              <span class="tag">Balconcillo</span>
+              <span class="tag">Urb. Apolo</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Filtro y Puntos de Interés -->
+        <section class="panel-section">
+          <div class="section-label">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>PUNTOS REPRESENTATIVOS</span>
+          </div>
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="poi-search" placeholder="Buscar lugar (Gamarra, Matute...)" autocomplete="off">
+          </div>
+          <div class="poi-list" id="poi-list-container">
+            <!-- Renderizado dinámico vía JS -->
+          </div>
+        </section>
+
+        <!-- Opciones de Capa y Visualización -->
+        <section class="panel-section">
+          <div class="section-label">
+            <i class="fa-solid fa-sliders"></i>
+            <span>CONFIGURACIÓN DEL MAPA</span>
+          </div>
+          
+          <div class="control-row">
+            <label for="select-map-style">Capa Base (Estilo Google):</label>
+            <select id="select-map-style" class="form-select">
+              <option value="google-roadmap" selected>Google Maps (Calles / Vector)</option>
+              <option value="google-satellite">Google Maps (Satélite)</option>
+              <option value="google-hybrid">Google Maps (Híbrido + Relieve)</option>
+              <option value="google-terrain">Google Maps (Terreno)</option>
+              <option value="carto-dark">Modo Oscuro Cyberpunk</option>
+            </select>
+          </div>
+
+          <div class="control-row slider-control">
+            <div class="slider-header">
+              <label for="polygon-opacity">Opacidad de Bloques:</label>
+              <span id="opacity-val">45%</span>
+            </div>
+            <input type="range" id="polygon-opacity" min="10" max="90" value="45" class="range-slider">
+          </div>
+
+          <div class="toggle-switches-group">
+            <label class="switch-item">
+              <input type="checkbox" id="toggle-avenue-highlight" checked>
+              <span class="switch-slider"></span>
+              <span class="switch-text">Resaltar Avenida Divisoria</span>
+            </label>
+            <label class="switch-item">
+              <input type="checkbox" id="toggle-landmarks" checked>
+              <span class="switch-slider"></span>
+              <span class="switch-text">Mostrar Marcadores de Lugares</span>
+            </label>
+            <label class="switch-item">
+              <input type="checkbox" id="toggle-labels" checked>
+              <span class="switch-slider"></span>
+              <span class="switch-text">Mostrar Etiquetas Flotantes</span>
+            </label>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Footer / Metadata de Estado -->
+      <footer class="sidebar-footer">
+        <div class="status-indicator">
+          <span class="status-dot online"></span>
+          <span>Google Map Engine V3 Ready</span>
+        </div>
+        <span class="version-tag">v1.0.0</span>
+      </footer>
+    </aside>
+
+    <!-- Área Principal: Contenedor del Mapa e Interfaces Flotantes -->
+    <main class="map-viewport" id="map-viewport">
+      
+      <!-- Contenedor del mapa Leaflet / Google Tiles -->
+      <div id="map-container" class="map-render-target"></div>
+
+      <!-- Header Flotante del Mapa con Información de Estado -->
+      <div class="floating-header">
+        <div class="floating-title-pill">
+          <div class="pill-badge" id="current-division-badge">Eje: Av. México</div>
+          <span class="pill-separator">•</span>
+          <span class="pill-subtext" id="map-status-text">Visualizando 2 Bloques Delimitados</span>
+        </div>
+        
+        <div class="floating-actions">
+          <button id="btn-reset-view" class="btn-floating" title="Centrar en La Victoria">
+            <i class="fa-solid fa-arrows-to-dot"></i>
+            <span>Centrar</span>
+          </button>
+          <button id="btn-fit-blocks" class="btn-floating" title="Ajustar Encuadre">
+            <i class="fa-solid fa-expand"></i>
+            <span>Encuadre</span>
+          </button>
+          <button id="btn-fullscreen" class="btn-floating" title="Pantalla Completa">
+            <i class="fa-solid fa-maximize"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Leyenda Flotante en la esquina inferior derecha -->
+      <div class="floating-legend" id="floating-legend">
+        <h4 class="legend-title">Leyenda Territorial</h4>
+        <div class="legend-items">
+          <div class="legend-row">
+            <span class="legend-color-box box-a"></span>
+            <span id="legend-label-a">Bloque 1 (Sector Norte)</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-color-box box-b"></span>
+            <span id="legend-label-b">Bloque 2 (Sector Sur)</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-line-box"></span>
+            <span id="legend-label-avenue">Av. México (Eje Central)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel de Detalles de Lugar Seleccionado (Modal emergente no invasivo) -->
+      <div class="poi-detail-card hidden" id="poi-detail-card">
+        <button class="btn-close-poi" id="btn-close-poi" aria-label="Cerrar detalles">&times;</button>
+        <div class="poi-detail-header">
+          <div class="poi-category-badge" id="poi-modal-category">Comercio</div>
+          <h4 class="poi-modal-title" id="poi-modal-title">Emporio Comercial Gamarra</h4>
+        </div>
+        <p class="poi-modal-desc" id="poi-modal-desc">El conglomerado textil más grande de Sudamérica.</p>
+        <div class="poi-modal-meta">
+          <div class="meta-row">
+            <i class="fa-solid fa-map-pin"></i>
+            <span id="poi-modal-block">Pertenencia: Bloque 1 (Norte)</span>
+          </div>
+          <div class="meta-row">
+            <i class="fa-solid fa-location-arrow"></i>
+            <span id="poi-modal-coords">-12.0654, -77.0132</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
