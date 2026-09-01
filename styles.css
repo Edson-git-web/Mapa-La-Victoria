@@ -1061,19 +1061,43 @@ html, body {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Responsive */
+/* Backdrop oscuro para Drawer en Dispositivos Móviles */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1500;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-backdrop.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   OPTIMIZACIONES RESPONSIVE (TABLETS Y SMARTPHONES)
+   ========================================================================== */
 @media (max-width: 900px) {
+  /* Sidebar en modo Drawer flotante sobre el mapa */
   .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     width: 85vw;
     min-width: 0;
-    max-width: 360px;
+    max-width: 380px;
     z-index: 2000;
     margin-left: 0;
     transform: translateX(0);
-    transition: transform var(--transition-smooth), opacity 0.2s ease, visibility 0.2s ease;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.8);
+    transition: transform var(--transition-smooth), opacity 0.25s ease, visibility 0.25s ease;
   }
   
   .sidebar.collapsed {
@@ -1083,22 +1107,137 @@ html, body {
     visibility: hidden;
     pointer-events: none;
   }
-  
-  .floating-header {
+
+  /* Botón para abrir el panel en móvil */
+  .btn-toggle-floating-sidebar {
     top: 0.75rem;
-    width: 95%;
+    left: 0.75rem;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.8rem;
+    z-index: 1100;
   }
 
+  /* Header Superior Flotante */
+  .floating-header {
+    top: 0.75rem;
+    left: auto;
+    right: 0.75rem;
+    transform: none;
+    max-width: calc(100% - 95px);
+    justify-content: flex-end;
+    gap: 0.4rem;
+  }
+
+  .floating-title-pill {
+    padding: 0.35rem 0.75rem;
+    gap: 0.4rem;
+  }
+
+  .pill-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .pill-separator,
+  .pill-subtext {
+    display: none; /* Ahorra espacio en pantalla pequeña */
+  }
+
+  .btn-floating {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.8rem;
+  }
+
+  .btn-floating span {
+    display: none; /* Muestra sólo los iconos para máxima limpieza */
+  }
+
+  /* Reposicionar controles de zoom de Leaflet */
+  .leaflet-top.leaflet-right {
+    top: 3.5rem;
+    right: 0.75rem;
+  }
+
+  /* Leyenda Compacta en esquina inferior */
   .floating-legend {
     bottom: 0.75rem;
     right: 0.75rem;
-    min-width: 160px;
-    padding: 0.65rem 0.85rem;
+    min-width: 140px;
+    padding: 0.5rem 0.75rem;
+    gap: 0.35rem;
+    z-index: 900;
   }
-  
+
+  .legend-title {
+    font-size: 0.65rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .legend-row {
+    font-size: 0.68rem;
+    gap: 0.4rem;
+  }
+
+  .legend-color-box {
+    width: 11px;
+    height: 11px;
+  }
+
+  .legend-line-box {
+    width: 12px;
+    height: 3px;
+  }
+
+  /* Modal de Detalles en Pantalla Completa Inferior (Bottom Sheet) */
   .poi-detail-card {
-    left: 0.75rem;
-    bottom: 0.75rem;
-    width: calc(100% - 1.5rem);
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    width: auto;
+    max-width: 100%;
+    padding: 1rem 1.15rem;
+    border-radius: var(--radius-md);
+    z-index: 1200;
+  }
+
+  .poi-modal-title {
+    font-size: 0.95rem;
+  }
+
+  .poi-modal-desc {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 90vw;
+  }
+
+  .sidebar-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .sidebar-scrollable {
+    padding: 1rem 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .block-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    padding: 0.5rem;
+  }
+
+  .metric-label {
+    font-size: 0.6rem;
+  }
+
+  .metric-value {
+    font-size: 0.78rem;
+  }
+
+  .poi-list {
+    max-height: 140px;
   }
 }

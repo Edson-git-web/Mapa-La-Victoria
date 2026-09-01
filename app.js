@@ -846,9 +846,10 @@
       btnClosePoi.addEventListener('click', hidePOIDetailCard);
     }
 
-    // 9. Colapso / Expansión del Sidebar
+    // 9. Colapso / Expansión del Sidebar (Con soporte para Drawer Móvil y Backdrop)
     const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
     const btnOpenSidebar = document.getElementById('btn-open-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
     const sidebar = document.getElementById('main-sidebar');
 
     function toggleSidebar(collapse) {
@@ -858,9 +859,11 @@
       if (shouldCollapse) {
         sidebar.classList.add('collapsed');
         if (btnOpenSidebar) btnOpenSidebar.classList.remove('hidden');
+        if (backdrop) backdrop.classList.add('hidden');
       } else {
         sidebar.classList.remove('collapsed');
         if (btnOpenSidebar) btnOpenSidebar.classList.add('hidden');
+        if (backdrop && window.innerWidth <= 900) backdrop.classList.remove('hidden');
       }
 
       // Animación continua de redimensionamiento de Leaflet durante la transición CSS (400ms)
@@ -880,6 +883,15 @@
 
     if (btnOpenSidebar) {
       btnOpenSidebar.addEventListener('click', () => toggleSidebar(false));
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', () => toggleSidebar(true));
+    }
+
+    // En pantallas móviles (< 900px), colapsar sidebar al inicio para apreciar el mapa de inmediato
+    if (window.innerWidth <= 900) {
+      toggleSidebar(true);
     }
   }
 
