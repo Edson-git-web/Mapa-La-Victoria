@@ -848,40 +848,38 @@
 
     // 9. Colapso / Expansión del Sidebar
     const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+    const btnOpenSidebar = document.getElementById('btn-open-sidebar');
     const sidebar = document.getElementById('main-sidebar');
 
-    if (btnToggleSidebar && sidebar) {
-      btnToggleSidebar.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        setTimeout(() => {
-          state.map.invalidateSize();
-        }, 360);
-
-        // Si se colapsa, mostrar botón flotante para reabrir
-        ensureFloatingSidebarButton(sidebar);
-      });
-    }
-  }
-
-  // --- BOTÓN FLOTANTE DINÁMICO PARA REABRIR SIDEBAR ---
-  function ensureFloatingSidebarButton(sidebar) {
-    let btnFloating = document.getElementById('btn-reopen-sidebar');
-    if (sidebar.classList.contains('collapsed')) {
-      if (!btnFloating) {
-        btnFloating = document.createElement('button');
-        btnFloating.id = 'btn-reopen-sidebar';
-        btnFloating.className = 'btn-toggle-floating-sidebar';
-        btnFloating.innerHTML = '<i class="fa-solid fa-bars"></i><span>Panel</span>';
-        document.getElementById('map-viewport').appendChild(btnFloating);
-
-        btnFloating.addEventListener('click', () => {
-          sidebar.classList.remove('collapsed');
-          btnFloating.remove();
-          setTimeout(() => state.map.invalidateSize(), 360);
-        });
+    function toggleSidebar(collapse) {
+      if (!sidebar) return;
+      const shouldCollapse = collapse !== undefined ? collapse : !sidebar.classList.contains('collapsed');
+      
+      if (shouldCollapse) {
+        sidebar.classList.add('collapsed');
+        if (btnOpenSidebar) btnOpenSidebar.classList.remove('hidden');
+      } else {
+        sidebar.classList.remove('collapsed');
+        if (btnOpenSidebar) btnOpenSidebar.classList.add('hidden');
       }
-    } else if (btnFloating) {
-      btnFloating.remove();
+
+      // Animación continua de redimensionamiento de Leaflet durante la transición CSS (400ms)
+      const start = performance.now();
+      function triggerResize(now) {
+        if (state.map) state.map.invalidateSize();
+        if (now - start < 400) {
+          requestAnimationFrame(triggerResize);
+        }
+      }
+      requestAnimationFrame(triggerResize);
+    }
+
+    if (btnToggleSidebar) {
+      btnToggleSidebar.addEventListener('click', () => toggleSidebar(true));
+    }
+
+    if (btnOpenSidebar) {
+      btnOpenSidebar.addEventListener('click', () => toggleSidebar(false));
     }
   }
 

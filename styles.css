@@ -102,6 +102,8 @@ html, body {
    ========================================================================== */
 .sidebar {
   width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  max-width: var(--sidebar-width);
   height: 100vh;
   background: var(--bg-surface);
   backdrop-filter: var(--blur-backdrop);
@@ -111,13 +113,18 @@ html, body {
   flex-direction: column;
   z-index: 1000;
   box-shadow: var(--shadow-lg);
-  transition: transform var(--transition-smooth), width var(--transition-smooth);
+  transition: margin-left var(--transition-smooth), transform var(--transition-smooth), opacity 0.2s ease, visibility 0.2s ease;
   position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .sidebar.collapsed {
+  margin-left: calc(-1 * var(--sidebar-width));
   transform: translateX(-100%);
-  width: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   border-right: none;
 }
 
@@ -696,23 +703,41 @@ html, body {
   background: var(--bg-surface);
   backdrop-filter: var(--blur-backdrop);
   -webkit-backdrop-filter: var(--blur-backdrop);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-highlight);
   color: #fff;
-  padding: 0.65rem 1rem;
+  padding: 0.65rem 1.15rem;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   transition: var(--transition-fast);
+  animation: fadeInButton 0.25s ease-out;
+}
+
+.btn-toggle-floating-sidebar.hidden {
+  display: none !important;
 }
 
 .btn-toggle-floating-sidebar:hover {
   background: var(--bg-surface-hover);
-  border-color: var(--border-highlight);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
+}
+
+@keyframes fadeInButton {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Header Flotante sobre el Mapa */
@@ -1039,12 +1064,24 @@ html, body {
 /* Responsive */
 @media (max-width: 900px) {
   .sidebar {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 85%;
+    width: 85vw;
+    min-width: 0;
     max-width: 360px;
     z-index: 2000;
+    margin-left: 0;
+    transform: translateX(0);
+    transition: transform var(--transition-smooth), opacity 0.2s ease, visibility 0.2s ease;
+  }
+  
+  .sidebar.collapsed {
+    margin-left: 0;
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
   
   .floating-header {
