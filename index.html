@@ -188,10 +188,18 @@
 
           <div class="control-row slider-control">
             <div class="slider-header">
-              <label for="polygon-opacity">Opacidad de Bloques:</label>
-              <span id="opacity-val">45%</span>
+              <label for="polygon-opacity">Opacidad Base (Reposo):</label>
+              <span id="opacity-val">30%</span>
             </div>
-            <input type="range" id="polygon-opacity" min="10" max="90" value="45" class="range-slider">
+            <input type="range" id="polygon-opacity" min="5" max="80" value="30" class="range-slider">
+          </div>
+
+          <div class="control-row slider-control">
+            <div class="slider-header">
+              <label for="polygon-hover-opacity">Opacidad al Resaltar (Hover):</label>
+              <span id="hover-opacity-val">50%</span>
+            </div>
+            <input type="range" id="polygon-hover-opacity" min="10" max="90" value="50" class="range-slider">
           </div>
 
           <div class="toggle-switches-group">

@@ -381,7 +381,8 @@
     avenueTooltip: null,
     poiMarkers: [],
     labelsLayer: L.layerGroup(),
-    polygonOpacity: 0.45,
+    polygonOpacity: 0.30,
+    polygonHoverOpacity: 0.50,
     showAvenue: true,
     showLandmarks: true,
     showLabels: true,
@@ -673,21 +674,22 @@
   function highlightBlockCard(blockKey, isHighlighted) {
     const cardA = document.getElementById('card-block-a');
     const cardB = document.getElementById('card-block-b');
+    const targetOpacity = isHighlighted ? state.polygonHoverOpacity : state.polygonOpacity;
 
     if (blockKey === 'A') {
-      cardA.classList.toggle('highlighted-a', isHighlighted);
+      if (cardA) cardA.classList.toggle('highlighted-a', isHighlighted);
       if (state.polygonA) {
         state.polygonA.setStyle({
-          fillOpacity: isHighlighted ? 0.7 : state.polygonOpacity,
-          weight: isHighlighted ? 5 : 3
+          fillOpacity: targetOpacity,
+          weight: isHighlighted ? 4 : 3
         });
       }
     } else {
-      cardB.classList.toggle('highlighted-b', isHighlighted);
+      if (cardB) cardB.classList.toggle('highlighted-b', isHighlighted);
       if (state.polygonB) {
         state.polygonB.setStyle({
-          fillOpacity: isHighlighted ? 0.7 : state.polygonOpacity,
-          weight: isHighlighted ? 5 : 3
+          fillOpacity: targetOpacity,
+          weight: isHighlighted ? 4 : 3
         });
       }
     }
@@ -720,7 +722,7 @@
       });
     }
 
-    // 3. Slider de Opacidad
+    // 3. Sliders de Opacidad (Base y Hover)
     const opacitySlider = document.getElementById('polygon-opacity');
     const opacityValText = document.getElementById('opacity-val');
     if (opacitySlider) {
@@ -731,6 +733,16 @@
 
         if (state.polygonA) state.polygonA.setStyle({ fillOpacity: state.polygonOpacity });
         if (state.polygonB) state.polygonB.setStyle({ fillOpacity: state.polygonOpacity });
+      });
+    }
+
+    const hoverOpacitySlider = document.getElementById('polygon-hover-opacity');
+    const hoverOpacityValText = document.getElementById('hover-opacity-val');
+    if (hoverOpacitySlider) {
+      hoverOpacitySlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        state.polygonHoverOpacity = val / 100;
+        if (hoverOpacityValText) hoverOpacityValText.textContent = `${val}%`;
       });
     }
 
@@ -776,12 +788,20 @@
       });
     }
 
-    // Cards clickeables para zoom
+    // Cards clickeables e interactivas con hover sincronizado
     const cardA = document.getElementById('card-block-a');
-    if (cardA) cardA.addEventListener('click', () => zoomToLayer(state.polygonA));
+    if (cardA) {
+      cardA.addEventListener('click', () => zoomToLayer(state.polygonA));
+      cardA.addEventListener('mouseenter', () => highlightBlockCard('A', true));
+      cardA.addEventListener('mouseleave', () => highlightBlockCard('A', false));
+    }
 
     const cardB = document.getElementById('card-block-b');
-    if (cardB) cardB.addEventListener('click', () => zoomToLayer(state.polygonB));
+    if (cardB) {
+      cardB.addEventListener('click', () => zoomToLayer(state.polygonB));
+      cardB.addEventListener('mouseenter', () => highlightBlockCard('B', true));
+      cardB.addEventListener('mouseleave', () => highlightBlockCard('B', false));
+    }
 
     // 6. Botones de Control Flotante
     const btnResetView = document.getElementById('btn-reset-view');
